@@ -4,6 +4,13 @@ import { useEffect, useRef } from "react";
 import type { Project } from "@/lib/content";
 import { TechRow } from "./TechIcons";
 
+/** Légende sous la vidéo : dit au visiteur ce qu’il regarde. */
+function mediaCaption(kind: Project["video"]["kind"]): string {
+  if (kind === "recording") return "Démonstration de l’application";
+  if (kind === "motion") return "Animation explicative · projet privé";
+  return "Présentation animée · illustration du projet";
+}
+
 type Props = {
   project: Project;
   isPlaying: boolean;
@@ -73,7 +80,7 @@ export function ProjectCard({ project, isPlaying, reduced, register, onHover, on
         <h3 className="project__title">{project.title}</h3>
         <p className="project__problem">{project.problem}</p>
         <TechRow keys={project.tech} />
-        <p className="media-caption">{project.video.kind === "recording" ? "Démonstration de l’application" : "Présentation animée · illustration du projet"}</p>
+        <p className="media-caption">{mediaCaption(project.video.kind)}</p>
         <details className="project__details">
           <summary>Ce que fait le projet <span aria-hidden="true">+</span></summary>
           <ul>{project.highlights.map((item) => <li key={item}>{item}</li>)}</ul>

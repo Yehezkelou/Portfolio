@@ -29,7 +29,7 @@ export type Project = {
   highlights: string[];
   tech: TechKey[];
   /** Fichiers dans /public/videos/ — fournis .webm ET .mp4 si possible. */
-  video: { webm?: string; mp4?: string; poster: string; kind?: "illustration" | "recording" };
+  video: { webm?: string; mp4?: string; poster: string; kind?: "illustration" | "recording" | "motion" };
   repo: string | null;
   demo: string | null;
   /** Un seul projet à true : il reçoit la grande place. */
@@ -66,7 +66,7 @@ export const projects: Project[] = [
     highlights: ["Dossiers d’immatriculation centralisés", "Circuit de validation administratif", "Certificats vérifiables par QR code"],
     problem: "Une application pour immatriculer les navires, suivre les validations et vérifier les certificats par QR code.",
     tech: ["react", "typescript", "python", "postgresql"],
-    video: { mp4: "/videos/drin.mp4", poster: "/posters/drin.svg" },
+    video: { mp4: "/videos/drin.mp4", poster: "/posters/drin.jpg", kind: "motion" },
     repo: null,
     demo: null,
     featured: true,
@@ -100,7 +100,7 @@ export const projects: Project[] = [
     highlights: ["Dossiers de procédures maritimes", "Documents et échanges centralisés", "Suivi du temps par dossier"],
     problem: "Un espace partagé pour suivre les procédures maritimes, retrouver les documents et coordonner le travail des équipes.",
     tech: ["nextdotjs", "react", "python", "postgresql"],
-    video: { mp4: "/videos/oerp.mp4", poster: "/posters/oerp.svg" },
+    video: { mp4: "/videos/oerp.mp4", poster: "/posters/oerp.jpg", kind: "motion" },
     repo: null,
     demo: null,
   },
