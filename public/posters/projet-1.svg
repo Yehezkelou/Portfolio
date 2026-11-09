@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="1600" height="900" role="img" aria-label="projet-1 — poster de substitution">
+  <rect width="1600" height="900" fill="#e2ddd2"/>
+  <rect x="0.5" y="0.5" width="1599" height="899" fill="none" stroke="#d0cabd"/>
+  <g fill="none" stroke="#7c776c" stroke-width="2">
+    <circle cx="800" cy="420" r="56"/>
+  </g>
+  <path d="M785 390 L828 420 L785 450 Z" fill="#7c776c"/>
+  <g font-family="ui-monospace, 'SFMono-Regular', Menlo, monospace" fill="#7c776c">
+    <text x="64" y="820" font-size="34" letter-spacing="1">démo · projet-1</text>
+    <text x="1536" y="820" font-size="30" text-anchor="end" fill="#a29c8f">poster de substitution — remplace-moi</text>
+  </g>
+</svg>

@@ -1,0 +1,55 @@
+/* Copied into the isolated backend by prepare.py. Local fictional fixtures only. */
+import fs from 'node:fs';
+import path from 'node:path';
+import bcrypt from 'bcryptjs';
+
+async function main() {
+  const cwd = process.cwd();
+  const root = path.resolve(cwd, '../..');
+  const marker = JSON.parse(fs.readFileSync(path.join(root, '.portfolio-demo-sandbox.json'), 'utf8'));
+  if (marker.project !== 'saas' || marker.purpose !== 'portfolio-local-demo' || path.resolve(marker.source) === root) {
+    throw new Error('Refus : copie isolée non reconnue');
+  }
+  // Read only the configuration generated for this isolated checkout. Ignore inherited URLs.
+  const envText = fs.readFileSync(path.join(cwd, '.env'), 'utf8');
+  for (const line of envText.split(/\r?\n/)) {
+    const split = line.indexOf('=');
+    if (split > 0) process.env[line.slice(0, split)] = line.slice(split + 1);
+  }
+  const url = new URL(process.env.DATABASE_URL ?? '');
+  if (url.protocol !== 'postgresql:' || url.hostname !== '127.0.0.1' || url.port !== '55432'
+      || url.pathname !== '/portfolio_saas_demo' || url.username !== 'portfolio_demo') {
+    throw new Error('Refus : base locale de démonstration attendue');
+  }
+  const credentials = JSON.parse(fs.readFileSync(path.join(root, '.portfolio-demo/credentials.json'), 'utf8'));
+  const { default: prisma } = await import('./src/lib/prisma');
+  const { AuthService } = await import('./src/services/auth.service');
+  try {
+    let user = await prisma.user.findUnique({where: {email: credentials.email}});
+    if (!user) {
+      await new AuthService().register({email: credentials.email, password: credentials.password,
+        confirmPassword: credentials.password, tenantName: 'Atelier du Port · Démo', businessType: 'RESTAURANT'});
+      user = await prisma.user.findUniqueOrThrow({where: {email: credentials.email}});
+    }
+    const tenantId = user.tenantId;
+    const expiresAt = new Date(); expiresAt.setFullYear(expiresAt.getFullYear() + 1);
+    await prisma.subscription.update({where: {tenantId}, data: {status: 'ACTIVE', expiresAt}});
+    const role = await prisma.role.findFirstOrThrow({where: {tenantId, name: 'SERVEUR'}});
+    await prisma.staff.upsert({where: {identifier: credentials.staffIdentifier}, update: {}, create: {
+      tenantId, roleId: role.id, name: 'Alex Démo', identifier: credentials.staffIdentifier,
+      pinHash: await bcrypt.hash(credentials.staffPin, 12)}});
+    const food = await prisma.category.findFirstOrThrow({where: {tenantId, type: 'FOOD'}});
+    for (const [name, price, colorCode] of [['Poulet braisé · Démo', 4500, '#e7a36d'], ['Salade du marché · Démo', 3000, '#83b878']] as const) {
+      if (!await prisma.product.findFirst({where: {tenantId, name}})) {
+        await prisma.product.create({data: {tenantId, categoryId: food.id, name, price, stock: 40, colorCode}});
+      }
+    }
+    for (const name of ['Terrasse · Démo', 'Salle · Démo', 'Comptoir · Démo']) {
+      if (!await prisma.table.findFirst({where: {tenantId, name}})) await prisma.table.create({data: {tenantId, name}});
+    }
+    console.log('Compte restaurateur, accès staff, menu et tables de démonstration créés/vérifiés.');
+  } finally {
+    await prisma.$disconnect();
+  }
+}
+main().catch((error) => { console.error(error instanceof Error ? error.message : 'Échec du seed local'); process.exitCode = 1; });
