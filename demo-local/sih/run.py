@@ -18,6 +18,7 @@ FRONTS = {'front-auth': ('auth-service', '3000'), 'front-admission': ('admission
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('action', choices=['install', 'db', *SERVICES, *FRONTS])
+    parser.add_argument('--port', help='Port d’écoute de remplacement (conflit de port local)')
     args = parser.parse_args()
     root = BASE / '.local/work/sih'
     marker = json.loads((root / '.portfolio-demo-sandbox.json').read_text())
@@ -40,6 +41,10 @@ def main():
         command = ['pnpm', 'run', script]
     else:
         folder, port = FRONTS[args.action]
+        if args.port:
+            if not args.port.isdigit() or not (1024 <= int(args.port) <= 65535):
+                parser.error('Port de remplacement invalide')
+            port = args.port
         command = ['pnpm', 'exec', 'next', 'dev', str(root / 'apps/frontend' / folder), '--hostname', '127.0.0.1', '--port', port]
     subprocess.run(command, cwd=root, env=env, check=True)
 

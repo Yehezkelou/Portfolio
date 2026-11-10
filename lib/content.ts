@@ -78,7 +78,7 @@ export const projects: Project[] = [
     highlights: ["Menu accessible par QR code", "Gestion des tables et commandes", "Espaces séparés par établissement"],
     problem: "Une plateforme qui relie menu QR, tables et commandes pour simplifier le quotidien des équipes de restauration.",
     tech: ["react", "typescript", "nodedotjs", "postgresql"],
-    video: { mp4: "/videos/saas.mp4", poster: "/posters/saas.svg" },
+    video: { mp4: "/videos/real/saas.mp4", poster: "/posters/saas.jpg", kind: "recording" },
     repo: null,
     demo: null,
   },
